@@ -53,3 +53,4 @@ coverage/
 
 # Optional: local dev SSL certs
 *.pem
+package-lock.json

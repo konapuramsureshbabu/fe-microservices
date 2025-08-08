@@ -17,7 +17,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 vite-error.log
-
+package-lock.json
 # IDEs and editors
 .vscode/
 .idea/
@@ -53,3 +53,4 @@ coverage/
 
 # Optional: local dev SSL certs
 *.pem
+package-lock.json
