@@ -1,9 +1,11 @@
+
+# docker-compose.prod.yml (Updated to align with single package.json)
 version: '3.8'
 services:
   principal:
     build:
-      context: ./principal
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: principal/Dockerfile
     ports:
       - "3001:3001"
     environment:
@@ -11,8 +13,8 @@ services:
 
   hod:
     build:
-      context: ./hod
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: hod/Dockerfile
     ports:
       - "3002:3002"
     environment:
@@ -20,8 +22,8 @@ services:
 
   teacher:
     build:
-      context: ./teacher
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: teacher/Dockerfile
     ports:
       - "3003:3003"
     environment:
@@ -29,8 +31,8 @@ services:
 
   student:
     build:
-      context: ./student
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: student/Dockerfile
     ports:
       - "3004:3004"
     environment:

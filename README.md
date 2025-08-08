@@ -1,20 +1,8 @@
-# fe-microservices
-```plaintext
-# Root Folder Structure
-/project-root
-├── principal/
-├── hod/
-├── teacher/
-├── student/
-├── docker-compose.dev.yml
-├── docker-compose.prod.yml
-├── Makefile
-└── README.md
 
 # README.md
 # Frontend Microservices Project
 
-This project is a collection of four frontend microservices (`principal`, `hod`, `teacher`, `student`) built with React, TypeScript, Vite, Tailwind CSS, and Redux Toolkit. Each microservice provides a dashboard for different user roles in an educational institution. The project uses Docker and Docker Compose to manage the services.
+This project is a collection of four frontend microservices (`principal`, `hod`, `teacher`, `student`) built with React, TypeScript, Vite, Tailwind CSS, and Redux Toolkit. Each microservice provides a dashboard for different user roles in an educational institution. A single `package.json` at the project root manages dependencies, reducing build time and container size.
 
 ## Prerequisites
 
@@ -38,6 +26,8 @@ make --version
 - `hod/`: Dashboard for the Head of Department role (port 3002)
 - `teacher/`: Dashboard for the teacher role (port 3003)
 - `student/`: Dashboard for the student role (port 3004)
+- `package.json`: Shared dependencies for all microservices
+- `node_modules/`: Shared dependency installation
 - `docker-compose.dev.yml`: Configuration for development environment
 - `docker-compose.prod.yml`: Configuration for production environment
 - `Makefile`: Commands for building and running services
@@ -48,19 +38,14 @@ make --version
 Extract the project zip or clone the repository to your local machine.
 
 ### 2. Install Dependencies
-Each microservice requires Node.js dependencies, including `autoprefixer`, to be installed locally to ensure Tailwind CSS works correctly in the development environment.
+Dependencies are managed in the root `package.json`. Install them once:
 
-Run the following command from the project root to install dependencies for all microservices:
 ```bash
-for dir in principal hod teacher student; do
-  cd $dir
-  rm -rf node_modules package-lock.json
-  npm install
-  cd ..
-done
+rm -rf node_modules package-lock.json
+npm install
 ```
 
-This ensures that `node_modules` includes `autoprefixer`, which is required by `postcss.config.cjs`.
+This creates a shared `node_modules` directory at the project root, including `autoprefixer` for Tailwind CSS.
 
 ### 3. Build and Run in Development Mode
 Use the `Makefile` to build and run the services in development mode with Docker Compose.
@@ -90,7 +75,7 @@ This will start all microservices, each running a Vite development server:
 ### 4. Verify the Application
 Open a browser and navigate to the above URLs to access each dashboard. Verify that:
 - The dashboard loads with a sidebar, header, and content area.
-- Tailwind CSS styles are applied (e.g., blue sidebar for Principal with `bg-blue-800`, green for HOD with `bg-green-800`, etc.).
+- Tailwind CSS styles are applied (e.g., blue sidebar for Principal with `bg-blue-800`, green for HOD with `bg-green-800`, purple for Teacher with `bg-purple-800`, indigo for Student with `bg-indigo-800`).
 - Use browser developer tools (F12) to confirm that `index.css` is loaded and contains Tailwind styles.
 
 ### 5. Run in Production Mode
@@ -114,21 +99,92 @@ make clean
 
 ## Troubleshooting
 
-### Issue: `Cannot find module 'autoprefixer'`
-If you see this error when running `make dev`:
-1. Verify that `autoprefixer` is installed locally:
+### Issue: `ENOENT: no such file or directory, open '/app/package.json'`
+If you see this error during `docker compose build`:
+1. Ensure the root `package.json` exists:
 ```bash
-cd principal
-npm list autoprefixer
+ls package.json
 ```
-Repeat for `hod`, `teacher`, and `student`. If missing, run:
-```bash
-npm install
+2. Verify the `Dockerfile` copies the root `package.json`:
+```dockerfile
+COPY /package.json ./
 ```
-2. Rebuild and restart:
+3. Rebuild without cache:
 ```bash
 docker compose -f docker-compose.dev.yml down -v
 docker system prune -f
 docker compose -f docker-compose.dev.yml build --no-cache
 make dev
 ```
+
+### Issue: `Cannot find module 'autoprefixer'`
+If you see this error when running `make dev`:
+1. Verify that `autoprefixer` is installed in the root `node_modules`:
+```bash
+npm list autoprefixer
+```
+If missing, run:
+```bash
+npm install
+```
+2. Check that `docker-compose.dev.yml` mounts the shared `node_modules`:
+```yaml
+- ./node_modules:/app/node_modules
+```
+3. Rebuild and restart:
+```bash
+docker compose -f docker-compose.dev.yml down -v
+docker system prune -f
+docker compose -f docker-compose.dev.yml build --no-cache
+make dev
+```
+
+### Issue: Tailwind CSS Styles Not Applied
+- Open browser developer tools (F12) and check if `index.css` is loaded.
+- Verify that classes like `bg-blue-800` (Principal), `bg-green-800` (HOD), `bg-purple-800` (Teacher), or `bg-indigo-800` (Student) are applied to the sidebar.
+- Ensure `tailwind.config.js` in each microservice includes:
+```javascript
+content: ['./src/**/*.{js,jsx,ts,tsx}']
+```
+- Confirm `postcss.config.cjs` includes:
+```javascript
+module.exports = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
+```
+
+### Issue: Docker Build Fails
+- Check Docker logs:
+```bash
+docker compose -f docker-compose.dev.yml logs
+```
+- Ensure `node:18-alpine` image is available:
+```bash
+docker pull node:18-alpine
+```
+
+### Issue: Services Not Accessible
+- Confirm ports are not in use:
+```bash
+netstat -tuln | grep 300
+```
+- Check container status:
+```bash
+docker ps -a
+```
+
+## Development Notes
+- **Live Reloading**: In development mode, changes to `src/`, `public/`, or configuration files are reflected due to volume mounts in `docker-compose.dev.yml`.
+- **Shared Dependencies**: All microservices use the same dependencies from the root `package.json` and `node_modules`.
+- **Customization**: Modify `src/` files in each microservice to add features to the dashboards.
+
+## Contact
+For issues or questions, please refer to the project documentation or contact the maintainer.
+
+# Other Files (Unchanged)
+# principal/src/, hod/src/, teacher/src/, student/src/
+# principal/public/index.html, postcss.config.cjs, tailwind.config.js, vite.config.ts, etc.
+# (All remain identical to the previous artifact)

@@ -1,50 +1,70 @@
-# docker-compose.dev.yml
 version: '3.8'
 services:
   principal:
     build:
-      context: ./principal
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: principal/Dockerfile
     ports:
       - "3001:3001"
     volumes:
-      - ./principal:/app
+      - ./principal/src:/app/src
+      - ./principal/public:/app/public
+      - ./principal/index.css:/app/index.css
+      - ./principal/tailwind.config.js:/app/tailwind.config.js
+      - ./principal/vite.config.ts:/app/vite.config.ts
+      - ./node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
     command: npm run dev -- --port 3001 --host
 
   hod:
     build:
-      context: ./hod
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: hod/Dockerfile
     ports:
       - "3002:3002"
     volumes:
-      - ./hod:/app
+      - ./hod/src:/app/src
+      - ./hod/public:/app/public
+      - ./hod/index.css:/app/index.css
+      - ./hod/tailwind.config.js:/app/tailwind.config.js
+      - ./hod/vite.config.ts:/app/vite.config.ts
+      - ./node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
     command: npm run dev -- --port 3002 --host
 
   teacher:
     build:
-      context: ./teacher
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: teacher/Dockerfile
     ports:
       - "3003:3003"
     volumes:
-      - ./teacher:/app
+      - ./teacher/src:/app/src
+      - ./teacher/public:/app/public
+      - ./teacher/index.css:/app/index.css
+      - ./teacher/tailwind.config.js:/app/tailwind.config.js
+      - ./teacher/vite.config.ts:/app/vite.config.ts
+      - ./node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
     command: npm run dev -- --port 3003 --host
 
   student:
     build:
-      context: ./student
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: student/Dockerfile
     ports:
       - "3004:3004"
     volumes:
-      - ./student:/app
+      - ./student/src:/app/src
+      - ./student/public:/app/public
+      - ./student/index.css:/app/index.css
+      - ./student/tailwind.config.js:/app/tailwind.config.js
+      - ./student/vite.config.ts:/app/vite.config.ts
+      - ./node_modules:/app/node_modules
     environment:
       - NODE_ENV=development
     command: npm run dev -- --port 3004 --host
+

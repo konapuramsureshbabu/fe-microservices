@@ -1,5 +1,5 @@
 {
-    "name": "principal",
+    "name": "fe-microservices",
     "private": true,
     "version": "0.0.0",
     "type": "module",
@@ -26,3 +26,4 @@
       "@vitejs/plugin-react": "^4.0.3"
     }
   }
+  
