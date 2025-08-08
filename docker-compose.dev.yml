@@ -1,0 +1,50 @@
+# docker-compose.dev.yml
+version: '3.8'
+services:
+  principal:
+    build:
+      context: ./principal
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./principal:/app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --port 3001 --host
+
+  hod:
+    build:
+      context: ./hod
+      dockerfile: Dockerfile
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./hod:/app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --port 3002 --host
+
+  teacher:
+    build:
+      context: ./teacher
+      dockerfile: Dockerfile
+    ports:
+      - "3003:3003"
+    volumes:
+      - ./teacher:/app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --port 3003 --host
+
+  student:
+    build:
+      context: ./student
+      dockerfile: Dockerfile
+    ports:
+      - "3004:3004"
+    volumes:
+      - ./student:/app
+    environment:
+      - NODE_ENV=development
+    command: npm run dev -- --port 3004 --host
